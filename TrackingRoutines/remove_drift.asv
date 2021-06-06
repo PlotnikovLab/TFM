@@ -1,0 +1,7 @@
+function remove_drift(bild_datei, strain)
+    bild = imread(bild_datei);
+    figure, imagesc(bild), colormap gray, hold; 
+    title('Please select reference area where you believe the strain to be zero!');
+    quiver(strain.pos(:,1),strain.pos(:,2),strain.vec(:,1),strain.vec(:,2),2,'y');
+    area_bound = getline('closed');
+    in_ref_area = inpolygon(strain.pos(:,1),strain.pos(:,2)

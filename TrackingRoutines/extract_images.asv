@@ -1,0 +1,7 @@
+function extract_images(bild_datei, ziel)
+    mkdir(ziel)
+    bild_info = imfinfo(bild_datei);
+    for t= frames
+         bild = imread(bild_datei,t);
+         imwrite(bild, [bild_datei(1:end-4),'-',num2str(t),'.tif'],'tif','Compression','none','Description',bild_info(t).ImageDescription);
+    end
