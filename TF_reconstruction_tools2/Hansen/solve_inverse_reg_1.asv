@@ -1,0 +1,42 @@
+function forces = solve_inverse_reg_1(U,sm,X, V, knoten, pnts, ref_zeit, zeit, bild, FA)
+
+
+u_len = size(pnts,1);
+forces_len = size(knoten,1)*2;
+
+u_vec(1:2:2*u_len,1) = pnts(:,1,zeit) - pnts(:,1,ref_zeit);
+u_vec(2:2:2*u_len,1) = pnts(:,2,zeit) - pnts(:,2,ref_zeit);
+
+%fprintf('Konditionszahl der Matrix M ist: %6.2d \n', cond(M))
+
+figure;
+picard(U,sm,u_vec);
+figure;
+lambda_opt_vorschlag = l_curve(U,sm,u_vec,'Tikh',L,V)
+figure;
+lambda_v = logspace(-3,1,30);
+ls = size(lambda_v,2);
+[F_v,rho_v,eta_v]   = tikhonov(U,sm,X,u_vec,lambda_v);
+semilogx(lambda_v,rho_v,'b'), hold on
+title('Choice of regularization parameter')
+xlabel('l','fontname','symbol')
+ylabel('residual norm || A x - b ||_2')
+
+
+
+while 1   
+    lambda = input('Regularization parameter ? ("Return" to exit) ');
+    if isempty(lambda)
+        break
+    end
+    [forces,rho,eta]   = tikhonov(U,sm,X,u_vec,lambda);
+    plot_image(bild,'JPEG','bone');
+    plot_forces(forces,knoten,1);
+    if ~isempty(FA) 
+        plot_FA(FA);
+    end
+    title([' Residuum:' num2str(rho)]); 
+        
+    disp(['Mittlere Kraft in rekonstr. forces: ', num2str( mean((forces(1:2:forces_len).^2 + forces(2:2:forces_len).^2).^(0.5)))]);
+    disp(['Stdabw. von der mittleren Kraft in rekonstr. forces: ', num2str(std((forces(1:2:forces_len).^2 + forces(2:2:forces_len).^2).^(0.5)))]);
+end

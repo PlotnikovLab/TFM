@@ -1,0 +1,8 @@
+function TF_reconstruction
+    where_am_I = mfilename('fullpath');
+    [my_directory,name] = fileparts(where_am_I);
+    if isempty(strfind(path,my_directory))
+        path(path, my_directory);
+    end
+    get_data;
+end
